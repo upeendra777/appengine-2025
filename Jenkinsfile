@@ -65,7 +65,7 @@ pipeline {
                     sh 'gcloud config set project $PROJECT_ID'
 
                     // Deploy to App Engine
-                    sh 'gcloud app browse'
+                    sh 'gcloud app deploy'
                 }
             }
         }
