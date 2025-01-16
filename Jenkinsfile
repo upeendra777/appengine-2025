@@ -47,8 +47,8 @@ pipeline {
                     # Install pytest explicitly if it's not already in requirements.txt
                     pip install pytest
                     
-                    # Run tests using pytest
-                    . /tmp/venv/bin/pytest
+                    # Run tests using pytest via python -m
+                    python -m pytest
                     '''
                 }
             }
