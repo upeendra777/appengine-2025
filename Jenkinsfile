@@ -18,9 +18,18 @@ pipeline {
                 script {
                     // Install Python and pip locally (without sudo)
                     sh '''
+                    # Install python3-venv and pip
                     curl -sS https://install.python-poetry.org | python3 -
                     export PATH="$HOME/.local/bin:$PATH"
+                    
+                    # Create a virtual environment
+                    python3 -m venv /tmp/venv
+                    
+                    # Activate the virtual environment and upgrade pip
+                    . /tmp/venv/bin/activate
                     pip install --upgrade pip
+                    
+                    # Install the dependencies from requirements.txt
                     pip install -r requirements.txt
                     '''
                 }
@@ -30,8 +39,11 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run your tests here (if any)
-                    sh 'pytest'
+                    // Run your tests inside the virtual environment
+                    sh '''
+                    . /tmp/venv/bin/activate
+                    pytest
+                    '''
                 }
             }
         }
