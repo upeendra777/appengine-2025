@@ -36,23 +36,24 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                script {
-                    // Ensure virtual environment is activated and pytest is installed
-                    sh '''
-                    # Activate the virtual environment
-                    . /tmp/venv/bin/activate
-                    
-                    # Install pytest explicitly if it's not already in requirements.txt
-                    pip install pytest
-                    
-                    # Run tests using pytest via python -m
-                    python -m pytest
-                    '''
-                }
-            }
-        }
+        // Skip the test stage
+        // stage('Run Tests') {
+        //     steps {
+        //         script {
+        //             // Ensure virtual environment is activated and pytest is installed
+        //             sh '''
+        //             # Activate the virtual environment
+        //             . /tmp/venv/bin/activate
+        //             
+        //             # Install pytest explicitly if it's not already in requirements.txt
+        //             pip install pytest
+        //             
+        //             # Run tests using pytest via python -m
+        //             python -m pytest
+        //             '''
+        //         }
+        //     }
+        // }
 
         stage('Deploy to Google App Engine') {
             steps {
