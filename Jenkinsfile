@@ -39,10 +39,16 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run your tests inside the virtual environment
+                    // Ensure virtual environment is activated and pytest is installed
                     sh '''
+                    # Activate the virtual environment
                     . /tmp/venv/bin/activate
-                    pytest
+                    
+                    # Install pytest explicitly if it's not already in requirements.txt
+                    pip install pytest
+                    
+                    # Run tests using pytest
+                    . /tmp/venv/bin/pytest
                     '''
                 }
             }
