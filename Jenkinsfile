@@ -18,15 +18,17 @@ pipeline {
                 script {
                     // Install dependencies without requiring sudo password
                     sh '''
-                    # Update and install necessary packages
+                    # Update apt package list
                     sudo apt-get update -y
+                    
+                    # Install pip3 and Python development tools if not installed
                     sudo apt-get install -y python3-pip python3-dev
-
-                    # Upgrade pip
-                    pip3 install --upgrade pip
-
+                    
+                    # Upgrade pip to the latest version
+                    sudo pip3 install --upgrade pip
+                    
                     # Install dependencies from requirements.txt
-                    pip3 install -r requirements.txt
+                    sudo pip3 install -r requirements.txt
                     '''
                 }
             }
@@ -35,19 +37,19 @@ pipeline {
         stage('Deploy to Google App Engine') {
             steps {
                 script {
-                    // Check if gcloud is installed and show current working directory
+                    // Ensure gcloud is installed and show working directory
                     sh 'gcloud --version'
-                    sh 'pwd'  // Print working directory
+                    sh 'pwd'  // Print the working directory
                     sh 'ls -l'  // List contents to ensure app.yaml is present
 
-                    // Authenticate with Google Cloud
+                    // Authenticate with Google Cloud using service account
                     sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
 
-                    // Set project ID
+                    // Set the project ID for Google Cloud
                     sh 'gcloud config set project $PROJECT_ID'
 
-                    // Deploy to App Engine (with the correct runtime)
-                    sh 'gcloud app deploy app.yaml --quiet'  // Removed the ./ from the path
+                    // Deploy the application to App Engine
+                    sh 'gcloud app deploy app.yaml --quiet'  // Quiet flag prevents interactive prompts
                 }
             }
         }
@@ -56,7 +58,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            cleanWs()  // Optional: clean workspace after the pipeline
+            cleanWs()  // Optional: Clean workspace after the pipeline
         }
 
         success {
