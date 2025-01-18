@@ -15,12 +15,12 @@
 # This file specifies your Python application's runtime configuration.
 # See https://cloud.google.com/appengine/docs/standard/python3/configuring-your-app-for-app-engine for details.
 
-runtime: python27  # Use Python 3.9 runtime or another supported Python version
+runtime: python39  # Use Python 3.9 runtime (updated from python27)
 env: standard
 entrypoint: gunicorn -b :$PORT main:app  # Ensure that 'app' is created in main.py with acggiftart.create_app(config)
 
 # Remove the `runtime_config` block unless you have a specific reason for it.
-# Python 3 is default for the `python39` runtime.
+# Python 3 is the default for the `python39` runtime.
 
 beta_settings:
   # If using Cloud SQL, uncomment and set this value to the Cloud SQL
