@@ -16,19 +16,25 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install dependencies without requiring sudo password
+                    // Create and activate a virtual environment, then install dependencies
                     sh '''
                     # Update apt package list
                     sudo apt-get update -y
                     
-                    # Install pip3 and Python development tools if not installed
-                    sudo apt-get install -y python3-pip python3-dev
+                    # Install Python3 and development tools if not installed
+                    sudo apt-get install -y python3-pip python3-dev python3-venv
                     
-                    # Upgrade pip to the latest version with --break-system-packages
-                    sudo pip3 install --upgrade pip --break-system-packages
+                    # Create a virtual environment
+                    python3 -m venv venv
+                    
+                    # Activate the virtual environment
+                    source venv/bin/activate
+                    
+                    # Upgrade pip inside the virtual environment
+                    pip install --upgrade pip
                     
                     # Install dependencies from requirements.txt
-                    sudo pip3 install -r requirements.txt
+                    pip install -r requirements.txt
                     '''
                 }
             }
