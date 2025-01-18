@@ -13,28 +13,22 @@ pipeline {
             }
         }
 
-        stage('Clean Workspace') {
-            steps {
-                script {
-                    // Clean the workspace to remove any old build files
-                    deleteDir()  // Cleans the workspace before starting fresh
-                }
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install Poetry and set up the virtual environment
+                    // Create and activate a Python virtual environment
                     sh '''
-                    # Install poetry
-                    curl -sS https://install.python-poetry.org | python3 -
+                    # Create a virtual environment
+                    python3 -m venv /tmp/venv
 
-                    # Make sure Poetry is in the path
-                    export PATH="$HOME/.local/bin:$PATH"
-                    
-                    # Install dependencies using Poetry (this will create a virtual environment automatically)
-                    poetry install
+                    # Activate the virtual environment
+                    . /tmp/venv/bin/activate
+
+                    # Upgrade pip
+                    pip install --upgrade pip
+
+                    # Install dependencies from requirements.txt
+                    pip install -r requirements.txt
                     '''
                 }
             }
