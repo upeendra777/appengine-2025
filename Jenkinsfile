@@ -9,26 +9,24 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/saleemafroze/appengine-poc.git'
+                git branch: 'main', url: 'https://github.com/saleemafroze/appengine-2025.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Install necessary system-wide dependencies using apt
+                    // Install dependencies without requiring sudo password
                     sh '''
-                        # Update package list
-                        sudo apt update
+                    # Update and install necessary packages
+                    sudo apt-get update -y
+                    sudo apt-get install -y python3-pip python3-dev
 
-                        # Install required Python packages globally
-                        sudo apt install -y python3-pip python3-dev
+                    # Upgrade pip
+                    pip3 install --upgrade pip
 
-                        # Upgrade pip
-                        pip3 install --upgrade pip
-
-                        # Install dependencies listed in requirements.txt
-                        pip3 install -r requirements.txt
+                    # Install dependencies from requirements.txt
+                    pip3 install -r requirements.txt
                     '''
                 }
             }
