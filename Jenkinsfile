@@ -13,47 +13,32 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Clean Workspace') {
             steps {
                 script {
-                    // Install Python and pip locally (without sudo)
-                    sh '''
-                    # Install python3-venv and pip
-                    curl -sS https://install.python-poetry.org | python3 -
-                    export PATH="$HOME/.local/bin:$PATH"
-                    
-                    # Create a virtual environment
-                    python3 -m venv /tmp/venv
-                    
-                    # Activate the virtual environment and upgrade pip
-                    . /tmp/venv/bin/activate
-                    pip install --upgrade pip
-                    
-                    # Install the dependencies from requirements.txt
-                    pip install -r requirements.txt
-                    '''
+                    // Clean the workspace to remove any old build files
+                    deleteDir()  // Cleans the workspace before starting fresh
                 }
             }
         }
 
-        // Skip the test stage
-        // stage('Run Tests') {
-        //     steps {
-        //         script {
-        //             // Ensure virtual environment is activated and pytest is installed
-        //             sh '''
-        //             # Activate the virtual environment
-        //             . /tmp/venv/bin/activate
-        //             
-        //             # Install pytest explicitly if it's not already in requirements.txt
-        //             pip install pytest
-        //             
-        //             # Run tests using pytest via python -m
-        //             python -m pytest
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install Poetry and set up the virtual environment
+                    sh '''
+                    # Install poetry
+                    curl -sS https://install.python-poetry.org | python3 -
+
+                    # Make sure Poetry is in the path
+                    export PATH="$HOME/.local/bin:$PATH"
+                    
+                    # Install dependencies using Poetry (this will create a virtual environment automatically)
+                    poetry install
+                    '''
+                }
+            }
+        }
 
         stage('Deploy to Google App Engine') {
             steps {
@@ -65,7 +50,7 @@ pipeline {
                     sh 'gcloud config set project $PROJECT_ID'
 
                     // Deploy to App Engine
-                    sh 'gcloud app deploy'
+                    sh 'gcloud app deploy --quiet'  // Use --quiet to suppress prompts
                 }
             }
         }
@@ -74,7 +59,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            // Optional: Clean up after the pipeline
+            cleanWs()  // Optional: clean workspace after the pipeline
         }
 
         success {
