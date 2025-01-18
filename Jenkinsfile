@@ -52,8 +52,8 @@ pipeline {
                     // Set project ID
                     sh 'gcloud config set project $PROJECT_ID'
 
-                    // Deploy to App Engine with explicit path to app.yaml
-                    sh 'gcloud app deploy ./app.yaml --quiet'  // Use --quiet to suppress prompts
+                    // Deploy to App Engine (with the correct runtime)
+                    sh 'gcloud app deploy app.yaml --quiet'  // Removed the ./ from the path
                 }
             }
         }
