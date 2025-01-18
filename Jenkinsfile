@@ -2,49 +2,52 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_ID = 'my-first-devops-project-444911'
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')  // Service account credential
+        GOOGLE_CLOUD_PROJECT = 'my-first-devops-project-444911'  // Your GCP project ID
+        GOOGLE_CLOUD_REGION = 'us-central'  // Your GCP region (you can adjust it)
+        GOOGLE_APPLICATION_CREDENTIALS = '/path/to/your/service-account-key.json'  // Service account key for authentication
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/saleemafroze/appengine-poc.git'
+                // Checkout code from your repository
+                git 'https://github.com/your-repo/your-project.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Set up Google Cloud SDK') {
             steps {
                 script {
-                    // Create and activate a Python virtual environment
-                    sh '''
-                    # Create a virtual environment
-                    python3 -m venv /tmp/venv
-
-                    # Activate the virtual environment
-                    . /tmp/venv/bin/activate
-
-                    # Upgrade pip
-                    pip install --upgrade pip
-
-                    # Install dependencies from requirements.txt
-                    pip install -r requirements.txt
-                    '''
+                    // Install Google Cloud SDK
+                    sh 'curl https://sdk.cloud.google.com | bash'
+                    sh 'source $HOME/google-cloud-sdk/path.bash.inc'
                 }
             }
         }
 
-        stage('Deploy to Google App Engine') {
+        stage('Authenticate with Google Cloud') {
             steps {
                 script {
-                    // Authenticate with Google Cloud
-                    sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
+                    // Authenticate with Google Cloud using your service account key
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                }
+            }
+        }
 
-                    // Set project ID
-                    sh 'gcloud config set project $PROJECT_ID'
+        stage('Set Google Cloud Project') {
+            steps {
+                script {
+                    // Set the project ID for gcloud
+                    sh "gcloud config set project ${GOOGLE_CLOUD_PROJECT}"
+                }
+            }
+        }
 
-                    // Deploy to App Engine
-                    sh 'gcloud app deploy --quiet'  // Use --quiet to suppress prompts
+        stage('Deploy to App Engine') {
+            steps {
+                script {
+                    // Deploy to Google App Engine
+                    sh 'gcloud app deploy --quiet'
                 }
             }
         }
@@ -52,16 +55,8 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up...'
-            cleanWs()  // Optional: clean workspace after the pipeline
-        }
-
-        success {
-            echo 'Deployment successful!'
-        }
-
-        failure {
-            echo 'Deployment failed!'
+            // Clean up or notify on failure
+            echo 'Pipeline finished.'
         }
     }
 }
