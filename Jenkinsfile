@@ -18,17 +18,21 @@ pipeline {
                 script {
                     // Create and activate a Python virtual environment
                     sh '''
-                    # Create a virtual environment
-                    python3 -m venv /tmp/venv
+                    # Check if requirements.txt exists
+                    if [ -f "requirements.txt" ]; then
+                        # Create a virtual environment
+                        python3 -m venv /tmp/venv
 
-                    # Activate the virtual environment
-                    . /tmp/venv/bin/activate
+                        # Activate the virtual environment and install dependencies
+                        source /tmp/venv/bin/activate
 
-                    # Upgrade pip
-                    pip install --upgrade pip
-
-                    # Install dependencies from requirements.txt
-                    pip install -r requirements.txt
+                        # Upgrade pip and install dependencies
+                        pip install --upgrade pip
+                        pip install -r requirements.txt
+                    else
+                        echo "requirements.txt not found!"
+                        exit 1
+                    fi
                     '''
                 }
             }
@@ -37,6 +41,9 @@ pipeline {
         stage('Deploy to Google App Engine') {
             steps {
                 script {
+                    // Check if gcloud is installed
+                    sh 'gcloud --version'
+
                     // Authenticate with Google Cloud
                     sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
 
@@ -65,4 +72,3 @@ pipeline {
         }
     }
 }
-
