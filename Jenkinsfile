@@ -1,74 +1,40 @@
 pipeline {
     agent any
-
     environment {
-        PROJECT_ID = 'my-first-devops-project-444911'
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')  // Service account credential
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('google-service-account')
     }
-
     stages {
-        stage('Clone Repository') {
+        stage('Checkout SCM') {
             steps {
-                git branch: 'main', url: 'https://github.com/saleemafroze/appengine-poc.git'
+                checkout scm
             }
         }
-
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Create and activate a Python virtual environment
-                    sh '''
-                    # Check if requirements.txt exists
-                    if [ -f "requirements.txt" ]; then
-                        # Create a virtual environment
-                        python3 -m venv /tmp/venv
-
-                        # Activate the virtual environment (using . instead of source)
-                        . /tmp/venv/bin/activate
-
-                        # Upgrade pip and install dependencies
-                        pip install --upgrade pip
-                        pip install -r requirements.txt
-                    else
-                        echo "requirements.txt not found!"
-                        exit 1
-                    fi
-                    '''
+                    sh 'python3 -m venv /tmp/venv'
+                    sh '. /tmp/venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt'
                 }
             }
         }
-
         stage('Deploy to Google App Engine') {
             steps {
                 script {
-                    // Check if gcloud is installed
+                    // Debug step to check Python version and environment
+                    sh 'python --version'
                     sh 'gcloud --version'
-
-                    // Authenticate with Google Cloud
-                    sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
-
-                    // Set project ID
-                    sh 'gcloud config set project $PROJECT_ID'
-
-                    // Deploy to App Engine
-                    sh 'gcloud app deploy --quiet'  // Use --quiet to suppress prompts
+                    sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
+                    sh 'gcloud config set project my-first-devops-project-444911'
+                    
+                    // Deploy with the correct path to app.yaml (in this case, the root of the project)
+                    sh 'gcloud app deploy ./app.yaml --quiet'
                 }
             }
         }
     }
-
     post {
         always {
-            echo 'Cleaning up...'
-            cleanWs()  // Optional: clean workspace after the pipeline
-        }
-
-        success {
-            echo 'Deployment successful!'
-        }
-
-        failure {
-            echo 'Deployment failed!'
+            cleanWs()
         }
     }
 }
