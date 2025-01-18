@@ -23,8 +23,8 @@ pipeline {
                         # Create a virtual environment
                         python3 -m venv /tmp/venv
 
-                        # Activate the virtual environment and install dependencies
-                        source /tmp/venv/bin/activate
+                        # Activate the virtual environment (using . instead of source)
+                        . /tmp/venv/bin/activate
 
                         # Upgrade pip and install dependencies
                         pip install --upgrade pip
