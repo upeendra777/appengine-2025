@@ -16,18 +16,20 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Check if requirements.txt exists and install dependencies globally
-                    if (fileExists('requirements.txt')) {
-                        // Install dependencies globally using pip
-                        sh '''
-                        # Upgrade pip and install dependencies globally
+                    // Install necessary system-wide dependencies using apt
+                    sh '''
+                        # Update package list
+                        sudo apt update
+
+                        # Install required Python packages globally
+                        sudo apt install -y python3-pip python3-dev
+
+                        # Upgrade pip
                         pip3 install --upgrade pip
+
+                        # Install dependencies listed in requirements.txt
                         pip3 install -r requirements.txt
-                        '''
-                    } else {
-                        echo "requirements.txt not found!"
-                        exit 1
-                    }
+                    '''
                 }
             }
         }
