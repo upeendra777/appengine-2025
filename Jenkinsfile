@@ -16,24 +16,18 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Create and activate a Python virtual environment
-                    sh '''
-                    # Check if requirements.txt exists
-                    if [ -f "requirements.txt" ]; then
-                        # Create a virtual environment
-                        python3 -m venv /tmp/venv
-
-                        # Activate the virtual environment (using . instead of source)
-                        . /tmp/venv/bin/activate
-
-                        # Upgrade pip and install dependencies
-                        pip install --upgrade pip
-                        pip install -r requirements.txt
-                    else
+                    // Check if requirements.txt exists and install dependencies globally
+                    if (fileExists('requirements.txt')) {
+                        // Install dependencies globally using pip
+                        sh '''
+                        # Upgrade pip and install dependencies globally
+                        pip3 install --upgrade pip
+                        pip3 install -r requirements.txt
+                        '''
+                    } else {
                         echo "requirements.txt not found!"
                         exit 1
-                    fi
-                    '''
+                    }
                 }
             }
         }
