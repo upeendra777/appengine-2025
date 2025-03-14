@@ -29,7 +29,9 @@ pipeline {
                     sh 'gcloud config set project $PROJECT_ID'
 
                     // Deploy the application to App Engine
-                    sh 'gcloud app deploy --bucket=avian-chariot-450105-deployments --quiet'  // Quiet flag prevents interactive prompts
+                    sh 'gcloud config set app/staging_bucket gs://avian-chariot-450105-deployments'
+
+                    sh 'gcloud app deploy --quiet'  // Quiet flag prevents interactive prompts
                 }
             }
         }
