@@ -30,7 +30,7 @@ pipeline {
 
                     // Deploy the application to App Engine
 
-                    sh 'gcloud app deploy --quiet'  // Quiet flag prevents interactive prompts
+                    sh 'gcloud app deploy --no-bucket --quiet'  // Quiet flag prevents interactive prompts
                 }
             }
         }
