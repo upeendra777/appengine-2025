@@ -30,7 +30,7 @@ pipeline {
 
                     // Deploy the application to App Engine
 
-                    sh 'gcloud app deploy --bucket=gs://avian-chariot-450105-b7-deployments --quiet'  // Quiet flag prevents interactive prompts
+                    sh 'gcloud app deploy --bucket=gs://avian-chariot-450105-deployments --quiet'  // Quiet flag prevents interactive prompts
                 }
             }
         }
