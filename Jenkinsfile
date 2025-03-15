@@ -13,24 +13,48 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    sh '''
+                    # Update apt package list
+                    sudo apt-get update -y
+                    
+                    # Install Python3 and development tools if not installed
+                    sudo apt-get install -y python3-pip python3-dev python3-venv bash
+                    
+                    # Create a virtual environment
+                    python3 -m venv venv
+                    
+                    # Activate the virtual environment
+                    . venv/bin/activate  # Using dot (.) instead of 'source'
+                    
+                    # Upgrade pip inside the virtual environment
+                    pip install --upgrade pip
+                    
+                    # Install dependencies from requirements.txt
+                    pip install -r requirements.txt
+                    '''
+                }
+            }
+        }
 
         stage('Deploy to Google App Engine') {
             steps {
                 script {
-                    // Ensure gcloud is installed and show working directory
+                    // Check gcloud installation and working directory
                     sh 'gcloud --version'
-                    sh 'pwd'  // Print the working directory
-                    sh 'ls -l'  // List contents to ensure app.yaml is present
+                    sh 'pwd'
+                    sh 'ls -l'  // List files to verify app.yaml presence
 
-                    // Authenticate with Google Cloud using service account
+                    // Authenticate with Google Cloud
                     sh 'gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}'
 
-                    // Set the project ID for Google Cloud
+                    // Set the GCP project
                     sh 'gcloud config set project $PROJECT_ID'
 
                     // Deploy the application to App Engine
-
-                    sh 'gcloud app deploy --bucket=gs://avian-chariot-450105-deployments --quiet'  // Quiet flag prevents interactive prompts
+                    sh 'gcloud app deploy --bucket=gs://avian-chariot-450105-deployments --quiet'
                 }
             }
         }
@@ -39,7 +63,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up...'
-            cleanWs()  // Optional: Clean workspace after the pipeline
+            cleanWs()  // Cleans workspace
         }
 
         success {
