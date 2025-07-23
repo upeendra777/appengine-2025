@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         PROJECT_ID = 'gcp-devops-project1'
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')  // Service account credential
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-sevice-account')  // Service account credential
     }
 
     stages {
