@@ -61,17 +61,20 @@ pipeline {
     }
 
     post {
-        always {
+    always {
+        node {
             echo 'Cleaning up...'
-            cleanWs()  // Cleans workspace
-        }
-
-        success {
-            echo 'Deployment successful!'
-        }
-
-        failure {
-            echo 'Deployment failed!'
+            cleanWs()
         }
     }
+
+    success {
+        echo 'Deployment successful!'
+    }
+
+    failure {
+        echo 'Deployment failed!'
+    }
+}
+
 }
