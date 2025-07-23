@@ -60,13 +60,13 @@ pipeline {
         }
     }
 
-    post 
-    {
+   post {
     always {
-        node
-         {
-            echo 'Cleaning up...'
-            cleanWs()
+        script {
+            node {
+                echo 'Cleaning up...'
+                cleanWs()
+            }
         }
     }
 
