@@ -62,7 +62,8 @@ pipeline {
 
     post {
     always {
-        node {
+        node
+         {
             echo 'Cleaning up...'
             cleanWs()
         }
