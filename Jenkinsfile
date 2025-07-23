@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_ID = 'avian-chariot-450105-b7'
+        PROJECT_ID = 'gcp-devops-project1'
         GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')  // Service account credential
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/saleemafroze/appengine-2025.git'
+                git branch: 'main', url: 'https://github.com/upeendra777/appengine-2025.git'
             }
         }
 
@@ -54,7 +54,7 @@ pipeline {
                     sh 'gcloud config set project $PROJECT_ID'
 
                     // Deploy the application to App Engine
-                    sh 'gcloud app deploy --bucket=gs://avian-chariot-450105-deployments --quiet'
+                    sh 'gcloud app deploy --bucket=gs://uppu1 --quiet'
                 }
             }
         }
