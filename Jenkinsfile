@@ -60,7 +60,8 @@ pipeline {
         }
     }
 
-    post {
+    post 
+    {
     always {
         node
          {
@@ -76,6 +77,6 @@ pipeline {
     failure {
         echo 'Deployment failed!'
     }
-}
+    }
 
 }
